@@ -1,0 +1,6 @@
+=== TRAINING STARTED AT 2025-07-17 14:32:59 === 
+Starting from epoch: 0
+Total epochs: 15
+Batch size: 256
+Learning rate: 0.0001
+================================================================================
