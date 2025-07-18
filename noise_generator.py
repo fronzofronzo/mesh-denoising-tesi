@@ -187,7 +187,7 @@ if __name__ == "__main__":
     mesh_name = args.mesh_name
     noise_level = args.noise_level
     impulsive_level = args.impulsive_level
-    model_path = os.path.join(script_dir, "models", mesh_name + ".obj")
+    model_path = os.path.join(script_dir, "testing_models", mesh_name + ".obj")
     mesh = trimesh.load_mesh(model_path)
 
     processor = MeshProcessor(mesh)
@@ -199,5 +199,5 @@ if __name__ == "__main__":
         NoiseDirection.NORMAL,
         "Gaussian"
     )
-    noised_mesh_path = os.path.join(script_dir, "models", f"{mesh_name}_noised_{noise_level}_Gaussian.obj" )
+    noised_mesh_path = os.path.join(script_dir, "testing_models", f"{mesh_name}_noised_{noise_level}_Gaussian.obj" )
     noisy_mesh.export(file_obj=noised_mesh_path)
