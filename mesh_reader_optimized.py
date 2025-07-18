@@ -268,8 +268,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     mesh_name = args.mesh_name
     noise_level = args.noise_level
-    model_path = os.path.join(script_dir, "models", f"{mesh_name}_gt.obj")
-    noised_model_path = os.path.join(script_dir, "models", f"{mesh_name}_noised_{noise_level}_Gaussian.obj")
+    model_path = os.path.join(script_dir, "testing_models", f"{mesh_name}_gt.obj")
+    noised_model_path = os.path.join(script_dir, "testing_models", f"{mesh_name}_noised_{noise_level}_Gaussian.obj")
     noised_mesh = trimesh.load_mesh(noised_model_path)
     mesh = trimesh.load_mesh(model_path)
     gt_normals = []
@@ -279,7 +279,7 @@ if __name__ == "__main__":
     extended_noised_mesh = ExpandedMesh(noised_mesh)
     num_faces = len(noised_mesh.faces)
     os.makedirs(f"samples/{mesh_name}_{noise_level}")
-    output_directory = os.path.join(script_dir, "samples", f"{mesh_name}_{noise_level}")
+    output_directory = os.path.join(script_dir, "testing_samples", f"{mesh_name}_{noise_level}")
     # Process patch to mesh
     Parallel(n_jobs=-1, backend='loky', verbose=10)(
         delayed(process_patch)(
