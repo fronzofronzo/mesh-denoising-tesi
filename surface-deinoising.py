@@ -213,3 +213,23 @@ def get_boundary_vertices(mesh):
     except Exception as e:
         logger.warning(f"Error while computing border vertex: {e}")
         return set()
+
+def predict_normals(mesh_name, dgcnn, noise_level, device):
+    """
+    Predicts normals for all mesh faces.
+
+    Args:
+        mesh_name(str): name of the mesh to be processed.
+        dgcnn(torch.nn.Module): GCN trained to use to denoise.
+        noise_level(float): noise level of the mesh.
+        device(torch.device): Device to be used for computing.
+
+    Returns:
+        np.ndarray: array of predicted normals.
+    """
+    logger.info("Phase 1: Normal prediction for each face...")
+
+    samples_dir = os.path.join("samples", f"{mesh_name}_{noise_level}")
+    if not os.path.exists(samples_dir):
+        raise FileNotFoundError(f"Samples directory not found: {samples_dir}")
+        
