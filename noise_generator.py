@@ -187,7 +187,7 @@ if __name__ == "__main__":
     mesh_name = args.mesh_name
     noise_level = args.noise_level
     impulsive_level = args.impulsive_level
-    model_path = os.path.join(script_dir, "testing_models", mesh_name + ".obj")
+    model_path = os.path.join(script_dir, "testing_models", mesh_name + "_gt.obj")
     mesh = trimesh.load_mesh(model_path)
 
     processor = MeshProcessor(mesh)

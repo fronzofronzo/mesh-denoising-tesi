@@ -12,4 +12,4 @@
 #SBATCH --chdir=/scratch.hpc/gabriele.fronzoni/tesi
 #SBATCH --gres=gpu:1
 
-venv/bin/python3 generate_noise.py "$MESH" "$NOISE" "$IMPULSIVE"
+venv/bin/python3 noise_generator.py "$MESH" "$NOISE" "$IMPULSIVE"
