@@ -175,3 +175,41 @@ def refine_normals_iteratively(initial_normals, mesh, m=12,
 
     logger.info("Normals refinement completed.")
     return current_normals         
+
+def get_boundary_vertices(mesh):
+    """
+    Identify mesh border vertices.
+
+    Args:
+        mesh(ExpandedMesh or trimesh.Trimesh): target mesh.
+
+    Returns:
+        Set[int]: indices of border vertex.
+    """
+    try:
+        if hasattr(mesh, 'face_adjacency'):
+            face_adjacency = mesh.face_adjacency
+        else:
+            face_adjacency = []
+        
+        if hasattr(mesh, 'edges_unique_counts'):
+            edge_counts = mesh.edges_unique_counts
+            boundary_edge_indices = np.where(edge_counts == 1)[0]
+            boundary_edges = mesh.edges_unique[boundary_edge_indices]
+            return set(np.unique(boundary_edges.flatten()))
+        
+        edge_counts = {}
+        for face in mesh.faces:
+            for i in range(3):
+                edge = tuple(sorted([face[i], face[(i+1)%3]]))
+                edge_count[edge] = edge_count.get(edge, 0) + 1
+        
+        boundary_vertices = set()
+        for edge, count in edge_count.items():
+            if count == 1:
+                boundary_vertices.update(edge)
+        
+        return boundary_vertices
+    except Exception as e:
+        logger.warning(f"Error while computing border vertex: {e}")
+        return set()
