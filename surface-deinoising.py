@@ -36,3 +36,25 @@ def find_first_ring_neighborhood(vertex_index, mesh):
         boolean_matrix = mesh_faces == vertex_index
         faces_first_ring = np.any(boolean_matrix, axis=1)
         return np.where(faces_first_ring)[0]
+
+def validate_normals(normals):
+    """
+    Validate and normalize an array of normals.
+
+    Args:
+        normals(np.ndarray): normals array (N,3).
+
+    Returns:
+        normals array to normalize.
+    """
+    if normals.ndim == 1:
+        normals = normals.reshape(1,-1)
+    
+    if normals.shape[1] != 3:
+        raise ValueError(
+            f"Normals must have 3 components, found {normals.shape[1]}"
+        )
+    
+    norms =np.linalg.norm(normals, axis=1, keepdims=True)
+    norms[norms<1e-8]  =1.0
+    return normals / norms
