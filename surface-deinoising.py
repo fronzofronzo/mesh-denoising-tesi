@@ -273,4 +273,86 @@ def predict_normals(mesh_name, dgcnn, noise_level, device):
     normals_array = np.array(predict_normals_list)
     logger.info("Normals prediction completed.")
     return validate_normals(normals_array)
-        
+
+def update_vertex_positions(mesh, normals, k_iterations=15, lambda_factor=0.5):
+    """
+    Updates vertex positions based on denoised normals.
+
+    Args:
+        mesh(trimesh.Trimesh or ExpandedMesh): original mesh.
+        normals(np.ndarray): denoised normals.
+        k_iterations(int): number of iterations.
+        lambda_factor(float): attenuation factor of vertex displacement.
+
+    Returns:
+        np.ndarray: vertex new positions
+    """
+    logger.info("Updating vertex position.")
+
+    new_vertices = np.copy(mesh.vertices)
+    num_vertices = len(mesh.vertices)
+
+    use_precalculated_centroids = hasattr(mesh, 'centroids')
+    if use_precalculated_centroids:
+        logger.info("Using centroids of ExpandedMesh structure.")   
+
+    boundary_vertices = get_boundary_vertices(mesh)
+    logger.info(f"Found {len(boundary_vertices)} border vertex to set.")
+
+    for k in range(k_iterations):
+        vertices_k = np.copy(new_vertices)
+        vertices_k_plus_1 = np.zeros_like(vertices_k)
+        total_update_magnitude = 0.0
+        processed_vertices = 0
+
+        for i in range(num_vertices):
+            v_i_k = vertices_k[i]
+
+            if i in boundary_vertices:
+                vertices_k_plus_1[i] = v_i_k
+                continue
+            
+            first_ring_neighbors = find_first_ring_neighborhood(i, mesh)
+
+            if len(first_ring_neighbors) == 0:
+                vertices_k_plus_1[i] = v_i_k
+
+            sum_faces_contribution = np.zeros(3, dtype=float)
+
+            for face_idx in first_ring_neighbors:
+                denoised_normal = normals[face_idx].reshape(3)
+                if use_precalculated_centroids:
+                    face_centroid = mesh.centroids[face_idx]
+                else:
+                    try:
+                        face_centroid = calc_centroid(
+                            mesh.faces[face_idx], vertices_k
+                        )
+                    except Exception:
+                        face_vertices = vertices_k[mesh.faces[face_idx]]
+                        face_centroid = np.mean(face_vertices, axis=0)
+                
+                diff = face_centroid - v_i_k
+                projection_scalar = np.dot(denoised_normal, diff)
+                term_vector = denoised_normal * projection_scalar
+                sum_faces_contribution += term_vector
+            
+            if len(first_ring_neighbors) > 0:
+                norm_factor = 1.0/(3.0 * len(first_ring_neighbors))
+                update_vector = norm_factor * sum_faces_contribution
+                actual_update = lambda_factor * update_vector
+
+                total_update_magnitude += np.linalg.norm(actual_update)
+                vertices_k_plus_1[i] = v_i_k + actual_update
+                processed_vertices += 1
+            else:
+                vertices_k_plus_1[i] = v_i_k
+        new_vertices = np.copy(vertices_k_plus_1)
+
+        avg_update = total_update_magnitude / processed_vertices 
+        if processed_vertices > 0 else 0
+        logger.info(f"Iteration {k+1}/{k_iterations},
+                    Average magnitude of update: {avg_update:.6f}")
+
+    logger.info("Vertex update completed.")
+    return new_vertices
