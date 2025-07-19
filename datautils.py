@@ -13,6 +13,7 @@ from parsers import getParser
 k_data_path = "./samples/"
 k_h5_path = "./samples/"
 
+
 class MatrixDataset(Tdata.Dataset):
     def __init__(self, parser, data_path, num_neighbors, is_train):
         super(MatrixDataset).__init__()
@@ -148,6 +149,68 @@ def selfTest():
         inputs, gt, gt_norm, center_norm = data
         print(inputs.shape, i)
     '''
+
+def loadMAT(data_path, num_neighbors):
+    """
+    Standalone function to load MAT files
+    
+    Args:
+        data_path: Path to the .mat file
+        num_neighbors: Number of neighbors for padding/truncation
+    
+    Returns:
+        inputs, gt_res, gt_norm, center_norm
+    """
+    source_data = sio.loadmat(data_path)
+    input_matrix = source_data["MAT"]
+    input_matrix = np.array(input_matrix)
+    
+    input_features = source_data["FEA"]
+    input_features = np.array(input_features)
+    input_features = input_features.T
+
+    num_faces = input_matrix.shape[0]
+    if(num_faces >= num_neighbors):
+        input_matrix = input_matrix[0:num_neighbors, 0:num_neighbors]
+        input_features = input_features[0:num_neighbors]
+    else:
+        # Matrix Padding
+        input_matrix = np.pad(input_matrix, ((0, num_neighbors - num_faces), (0, num_neighbors - num_faces)), \
+            'constant', constant_values = (0, 0))
+        input_features = np.pad(input_features, ((0, num_neighbors - num_faces), (0, 0)), \
+            'constant', constant_values = (0, 0))
+
+    # input_features = input_features[:, 0:7]
+
+    input_indices = []
+    for i in range(num_neighbors):
+        temp_idx = np.array((input_matrix[i] == 1).nonzero()).reshape(-1)
+        temp_idx = list(temp_idx)
+        if(len(temp_idx) == 0):
+            temp_idx = [num_neighbors - 1, num_neighbors - 1, num_neighbors - 1]
+        elif(len(temp_idx) == 1):
+            temp_idx.append(temp_idx[0])
+            temp_idx.append(temp_idx[0])
+        elif(len(temp_idx) == 2):
+            temp_idx.append(temp_idx[1])
+
+        input_indices.append(temp_idx)
+
+    input_indices = np.array(input_indices)
+
+    gt_norm = source_data["GT"]
+    gt_norm = np.array(gt_norm).reshape(-1).astype(np.float32)
+
+    center_norm = source_data["NOR"]
+    center_norm = np.array(center_norm).reshape(-1).astype(np.float32)
+    
+    gt_res = ((np.dot(gt_norm, center_norm) * gt_norm) - center_norm + 1.) / 2.
+
+    # gt_norm = (gt_norm + 1.) / 2.
+
+    inputs = np.c_[input_features, input_indices]
+
+    return inputs, gt_res, gt_norm, center_norm
 
 if __name__ == '__main__':
     selfTest()

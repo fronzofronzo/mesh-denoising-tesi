@@ -12,4 +12,4 @@
 #SBATCH --chdir=/scratch.hpc/gabriele.fronzoni/tesi
 #SBATCH --gres=gpu:1
 
-venv/bin/python3 surface-denoising.py "$MESH" "$NOISE" "$REFINEMENT" "$EXPANDED"
+venv/bin/python3 surface-denoising.py "$MESH" "$NOISE" 
