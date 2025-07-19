@@ -428,3 +428,46 @@ def surface_denoising(mesh_name, noise_level, k_opt, use_refinement = True, use_
         logger.info(f"Denoised mesh saved in: {denoised_mesh_path}")
 
         return denoised_mesh_path
+
+def main():
+    """
+    Main function with arguments handling.
+    """
+    parser = argparse.ArgumentParser(
+        description='Denoise a 3D mesh using a pre-trained GCN-model.'
+    )
+    parser.add_argument('mesh_name', type=str,
+                        help='Name of the mesh to process')
+    parser.add_argument('noise_level', type=float,
+                        help='Noise level of selected mesh')
+    parser.add_argument('--use-refinement', action='store_true'
+                        help='Apply bilateral filter to refine normals') 
+    parser.add_argument('--disable-expanded-mesh', action='store_true',
+                        help='Disable ExpandedMesh optimization')
+    parser.add_argument('--log-level', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
+                        help='Set logging level.') 
+
+    args = parser.parse_args() 
+
+    logging.getLogger().setLevel(getattr(logging, args.log_level))
+
+    try:
+        k_opt = parsers.getParser()
+
+        if not hasattr(k_opt, 'current_model') or not k_opt.current_model:
+            raise ValueError("Model path not specified in k_opt.cirrent_model")
+
+        output_path = surface_denoising(
+            args.mesh_name,
+            args.noise_level,
+            args.use_refinement,
+            not args.disable_expanded_mesh)
+        logger.info(f"Denoising completed. Output: {output_path}")    
+    except Exception as e:
+        logger.error(f"Error during excecution: {e}")
+        return 1
+
+    return 0
+
+if __name__=="__main__":
+    exit(main())          
