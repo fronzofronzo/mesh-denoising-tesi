@@ -356,3 +356,75 @@ def update_vertex_positions(mesh, normals, k_iterations=15, lambda_factor=0.5):
 
     logger.info("Vertex update completed.")
     return new_vertices
+
+def surface_denoising(mesh_name, noise_level, k_opt, use_refinement = True, use_expanded_mesh=True):
+    """
+    Execute entire denoising process: normals prediction, refinement and vertex positions update. 
+
+    Args:
+        mesh_name(str): Name of the mesh to process.
+        noise_level(float): level of noise of selected noised mesh.
+        use_refinement(bool): Decide whether to use bilateral filtering or not.
+        use_expandend_mesh(bool): Decide whether use ExpandendMesh for optimization 
+    """
+    try:
+        mesh_path = os.path.join(f'testing_models', f"{mesh_name}_noised_{noise_level}_Gaussian.obj")
+
+        if not os.path.exists(mesh_path):
+            raise FileNotFoundError(f"Mesh file not found: {mesh_path}")
+        
+        logger.info(f"Mesh loading: {mesh_path}")
+        original_mesh = trimesh.load_mesh(mesh_path)
+
+        if len(original_mesh.faces) == 0:
+            raise ValueError("Mesh doesn't contain faces")
+        
+        if use_expanded_mesh:
+            logger.info("Creating ExpandedMesh for optimization")
+            try:
+                from ExpandedMesh import ExpandedMesh
+                mesh = ExpandedMesh(original_mesh)
+                logger.info("ExpandedMesh created!")
+            except ImportError:
+                logger.warning("ExpandedMesh not available, using standard trimesh.")
+                mesh = original_mesh
+        else: 
+            mesh = original_mesh
+
+        logger.info(f"Mesh loaded: {len(mesh.vertices)} vertices, {len(mesh.faces)} faces.")
+
+        logger.info(f"Loading model pre-trained: {k_opt.current_model}")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        if not os.path.exists(k_opt.current_model):
+            raise FileNotFoundError(f"Model file not found: {k_opt.current_model}")
+        
+        dgcnn = DGCNN(8, 17, 1024, 0.5)
+        dgcnn.load_state_dict(torch.load(k_opt.current_model, map_location=device))
+        dgcnn.to(device)
+        dgcnn.eval()
+        logger.info(f"Model successfully updated on {device}")
+
+        predict_normals = predict_normals(mesh_name, dgcnn, device)
+
+        if use_refinement:
+            logger.info("Applying bilateral filter...")
+            normals_to_use = refine_normals_iteratively(predict_normals, mesh, m=12)
+        else:
+            normals_to_use = predict_normals
+            logger.info('Bilateral filter deactivated')
+        
+        new_vertices = update_vertex_positions(mesh, normals_to_use)
+
+        denoised_mesh = trimesh.Trimesh(vertices=new_vertices,
+        faces=original_mesh.faces, process=False)
+
+        output_dir = "testing_models"
+        os.makedirs(output_dir, exist_ok)
+        
+        denoised_mesh_path = os.path.join(output_dir,
+                             f"denoised_{mesh_name}_{noise_level}.obj")
+        denoised_mesh.export(file_obj=denoised_mesh_path)
+        logger.info(f"Denoised mesh saved in: {denoised_mesh_path}")
+
+        return denoised_mesh_path
