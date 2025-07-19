@@ -53,3 +53,4 @@ venv/
 runs/
 samples/
 log*.txt
+testing_samples/
