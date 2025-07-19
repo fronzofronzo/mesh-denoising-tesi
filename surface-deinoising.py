@@ -232,4 +232,45 @@ def predict_normals(mesh_name, dgcnn, noise_level, device):
     samples_dir = os.path.join("samples", f"{mesh_name}_{noise_level}")
     if not os.path.exists(samples_dir):
         raise FileNotFoundError(f"Samples directory not found: {samples_dir}")
+    
+    mat_files = [f for f in os.listdir(samples_dir) if f.endswith('.mat')]
+    num_faces = len(mat_files)
+
+    if num_faces == 0:
+        raise ValueError(f"No .mat file found in {samples_dir}")
+    
+    logger.info(f"Found {num_faces} .mat files to process")
+
+    predict_normals_list = []
+
+    for i in range(num_faces): 
+        mat_path = os.path.join(samples_dir, f"0_{i}.mat")
+        if os.path.exists(mat_path):
+            try:
+                inputs, gt_res, gt_norm, center_norm = loadMAT(mat_path)
+
+                input_features = torch.FloatTensor(inputs)
+                                        .unsqueeze(0)
+                                        .permute(0,2,1)
+                
+                with torch.no_grad():
+                    output = dgcn(input_features)
+                
+                pred_norm = output.cpu().numpy().reshape(3)
+                predict_normals_list.append(pred_norm)
+            
+            except Exception as e:
+                logger.warning(
+                    f"Error processing patch {i}: {e}. Using default normal."
+                )
+                predicted_normals_list.append(np.array([0.0, 0.0, 1.0]))
+        else:
+            logger.warning(
+                f"Patch file not found: {mat_path}. Using default normal."
+            )
+            predicted_normals_list.append(np.array([0.0, 0.0, 1.0]))
+    
+    normals_array = np.array(predict_normals_list)
+    logger.info("Normals prediction completed.")
+    return validate_normals(normals_array)
         
