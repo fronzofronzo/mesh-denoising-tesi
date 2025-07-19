@@ -229,7 +229,7 @@ def predict_normals(mesh_name, dgcnn, noise_level, device):
     """
     logger.info("Phase 1: Normal prediction for each face...")
 
-    samples_dir = os.path.join("samples", f"{mesh_name}_{noise_level}")
+    samples_dir = os.path.join("testing_samples", f"{mesh_name}_{noise_level}")
     if not os.path.exists(samples_dir):
         raise FileNotFoundError(f"Samples directory not found: {samples_dir}")
     
