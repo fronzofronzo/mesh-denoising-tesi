@@ -276,7 +276,7 @@ def predict_normals(mesh_name, dgcnn, k_opt, noise_level, device):
     logger.info("Normals prediction completed.")
     return validate_normals(normals_array)
 
-def update_vertex_positions(mesh, normals, k_iterations=50, lambda_factor=0.5):
+def update_vertex_positions(mesh, normals, k_iterations=100, lambda_factor=0.5):
     """
     Updates vertex positions based on denoised normals.
 
@@ -399,7 +399,7 @@ def surface_denoising(mesh_name, noise_level, k_opt, use_refinement = True, use_
         if not os.path.exists(k_opt.current_model):
             raise FileNotFoundError(f"Model file not found: {k_opt.current_model}")
         
-        dgcnn = DGCNN(8, 17, 1024, 0.5)
+        dgcnn = DGCNN(8, 16, 1024, 0.5)
         dgcnn.load_state_dict(torch.load(k_opt.current_model, map_location=device))
         dgcnn.to(device)
         dgcnn.eval()

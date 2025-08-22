@@ -54,3 +54,6 @@ runs/
 samples/
 log*.txt
 testing_samples/
+new_samples/
+new_testing_samples/
+log_sbatch/

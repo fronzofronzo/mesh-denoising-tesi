@@ -112,8 +112,8 @@ class DGCNN(nn.Module):
         self.linear4 = nn.Linear(64, output_channels)
 
     def forward(self, inputs):
-        x = inputs[:, 0:17, :]
-        idx = inputs[:, 17:20, :]
+        x = inputs[:, 0:18, :]
+        idx = inputs[:, 18:21, :]
         idx = idx.long()
         idx = idx.permute(0, 2, 1)
 

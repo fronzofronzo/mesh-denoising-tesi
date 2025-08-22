@@ -227,10 +227,8 @@ class PatchData:
             area = self.areas[face]
             area = (area-min_area)/(max_area-min_area)
             # neighbors normalization
-            neighbors = np.count_nonzero(self.adj_pairs[:, 0] == face) + np.count_nonzero(self.adj_pairs[:, 1] == face)
-            neighbors = neighbors/ 3 * 0.5
             vertices = (self.vertices[self.faces[face]] +1)/2
-            features.append(np.hstack([centroid, normal, area, neighbors, vertices.flatten()]))
+            features.append(np.hstack([centroid, normal, area, vertices.flatten()]))
         return np.array(features).T
             
     def save_to_mat(self, filename):
@@ -278,7 +276,6 @@ if __name__ == "__main__":
     gt_normals = np.array(gt_normals)
     extended_noised_mesh = ExpandedMesh(noised_mesh)
     num_faces = len(noised_mesh.faces)
-    os.makedirs(f"testing_samples/{mesh_name}_{noise_level}")
     output_directory = os.path.join(script_dir, "testing_samples", f"{mesh_name}_{noise_level}")
     # Process patch to mesh
     Parallel(n_jobs=-1, backend='loky', verbose=10)(

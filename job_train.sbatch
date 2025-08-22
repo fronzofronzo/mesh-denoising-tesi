@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=testing_fronzoni
+#SBATCH --job-name=training_mesh_denoising
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gabriele.fronzoni@studio.unibo.it
-#SBATCH --time=24:00:00
+#SBATCH --time=3-24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8

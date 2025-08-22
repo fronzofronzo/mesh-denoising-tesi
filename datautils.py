@@ -10,8 +10,8 @@ import torch.utils.data as Tdata
 
 from parsers import getParser
 
-k_data_path = "./samples/"
-k_h5_path = "./samples/"
+k_data_path = "./new_samples/"
+k_h5_path = "./new_samples/"
 
 
 class MatrixDataset(Tdata.Dataset):

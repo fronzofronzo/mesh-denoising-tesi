@@ -193,7 +193,7 @@ def train():
 
     # initialize Network structure etc.
     current_epoch = 0
-    dgcnn = DGCNN(8, 17, 1024, 0.5)
+    dgcnn = DGCNN(8, 18, 1024, 0.5)
     # dgcnn = torch.nn.DataParallel(dgcnn)
     if k_opt.current_model != "":
         dgcnn.load_state_dict(torch.load(k_opt.current_model))
