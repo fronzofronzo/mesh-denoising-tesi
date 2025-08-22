@@ -95,9 +95,9 @@ class DGCNN(nn.Module):
         self.conv5 = nn.Sequential(nn.Conv2d(256*2, 256, kernel_size=1, bias=False),
                                    self.bn5,
                                    nn.LeakyReLU(negative_slope=0.2))
-        """"self.conv6 = nn.Sequential(nn.Conv2d(256*2, 256, kernel_size=1, bias=False),
+        """self.conv6 = nn.Sequential(nn.Conv2d(256*2, 256, kernel_size=1, bias=False),
                                    self.bn6,
-                                   nn.LeakyReLU(negative_slope=0.2))""""
+                                   nn.LeakyReLU(negative_slope=0.2))"""
         self.conv7 = nn.Sequential(nn.Conv1d(768, emb_dims, kernel_size=1, bias=False),
                                    self.bn7,
                                    nn.LeakyReLU(negative_slope=0.2))
@@ -138,9 +138,9 @@ class DGCNN(nn.Module):
         x = self.conv5(x)
         x5 = x.max(dim=-1, keepdim=False)[0]
 
-        """"x = get_graph_feature(x5, k=self.k)
+        """x = get_graph_feature(x5, k=self.k)
         x = self.conv6(x)
-        x6 = x.max(dim=-1, keepdim=False)[0]""""
+        x6 = x.max(dim=-1, keepdim=False)[0]"""
 
         x = torch.cat((x1, x2, x3, x4, x5), dim=1)
 
