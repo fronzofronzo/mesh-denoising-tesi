@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=31G
 #SBATCH --partition=rtx2080
-#SBATCH --output=log_training_%j.txt
+#SBATCH --output=log_sbatch/log_training_%j.txt
 #SBATCH --chdir=/scratch.hpc/gabriele.fronzoni/tesi
 #SBATCH --gres=gpu:1
 

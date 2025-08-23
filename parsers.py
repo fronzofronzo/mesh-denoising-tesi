@@ -12,7 +12,7 @@ def getParser():
     parser.add_argument("--num_epoch", type=int, default=15, help="Number of train epoch.")
     parser.add_argument("--num_val_batch", type=int, default=747, help="Number of selected batch for validation.")
 
-    parser.add_argument("--ckpt_path", type=str, default="./checkpoints/", help="Path to the checkpoints.")
+    parser.add_argument("--ckpt_path", type=str, default="./checkpoints/add_layer/", help="Path to the checkpoints.")
     parser.add_argument("--val_res_path", type=str, default="./validationRes/", help="Path to the validation results.")
     parser.add_argument("--test_res_path", type=str, default="./testRes/", help="Path to the test results.")
     #parser.add_argument("--current_model", type=str, default="./checkpoints/trained_mod.t7", help="Latest trainded model.")
