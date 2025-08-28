@@ -30,7 +30,7 @@ if not os.path.exists(k_opt.val_res_path):
 if not os.path.exists(k_opt.ckpt_path):
     os.makedirs(k_opt.ckpt_path)
 
-log_dir = "logs"
+log_dir = "logs/modified_add_layer"
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
@@ -74,7 +74,7 @@ def log_epoch_data(epoch, train_metrics, val_metrics, json_log_file, csv_log_fil
         'train_loss': float(train_metrics['loss']),
         'train_cos_loss': float(train_metrics['cos_loss']),
         'train_value_loss': float(train_metrics['value_loss']),
-        'val_loss': float(train_metrics['loss']),
+        'val_loss': float(val_metrics['loss']),
         'val_cos_loss': float(val_metrics['cos_loss']),
         'val_value_loss': float(val_metrics['value_loss']),
     }
