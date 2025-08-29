@@ -1,5 +1,5 @@
 import numpy as np
-import trimesh
+import trimesh, os
 
 def compute_normal_error(mesh_gt_path, mesh_denoised_path):
     """
@@ -43,5 +43,7 @@ def compute_normal_error(mesh_gt_path, mesh_denoised_path):
 
 # ESEMPIO USO:
 if __name__ == "__main__":
-    Ea_rad, Ea_deg = compute_normal_error("ground_truth.obj", "denoised.obj")
+    gt_model_path = os.path.join("testing_models", "trim-star_gt.obj")
+    denoised_model_path = os.path.join("testing_models", "denoised_trim-star_0.3_mod.obj")
+    Ea_rad, Ea_deg = compute_normal_error(gt_model_path, denoised_model_path)
     print(f"Errore medio angolare: {Ea_rad:.6f} rad ({Ea_deg:.6f} gradi)")
