@@ -15,9 +15,10 @@ k_h5_path = "./new_samples/"
 
 
 class MatrixDataset(Tdata.Dataset):
-    def __init__(self, parser, data_path, num_neighbors, is_train):
+    def __init__(self, parser, data_path, num_neighbors, is_train, batch_size):
         super(MatrixDataset).__init__()
-        self.batch_size = parser.batch_size
+        ## modified
+        self.batch_size = batch_size
         self.num_workers = parser.num_workers
         self.data_path = data_path
         self.num_neighbors = num_neighbors

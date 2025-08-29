@@ -145,8 +145,8 @@ def plot_losses_realtime(history_data, save_path='training_progress.png'):
 
 def splitData(data_path, num_val_batch):
     num_data = data_path.shape[0]
-    print(num_val_batch * k_opt.batch_size)
-    num_val_data = num_val_batch * k_opt.batch_size
+    print(num_val_batch)
+    num_val_data = num_val_batch
     num_train_data = num_data - num_val_data
 
     val_index = random.sample(range(0, num_data), num_val_data)

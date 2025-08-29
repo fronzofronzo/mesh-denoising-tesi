@@ -233,7 +233,7 @@ def predict_normals(mesh_name, dgcnn, k_opt, noise_level, device):
     """
     logger.info("Phase 1: Normal prediction for each face...")
 
-    samples_dir = os.path.join("testing_samples", f"{mesh_name}_{noise_level}")
+    samples_dir = os.path.join("new_testing_samples", f"{mesh_name}_{noise_level}")
     if not os.path.exists(samples_dir):
         raise FileNotFoundError(f"Samples directory not found: {samples_dir}")
     
@@ -399,7 +399,7 @@ def surface_denoising(mesh_name, noise_level, k_opt, use_refinement = True, use_
         if not os.path.exists(k_opt.current_model):
             raise FileNotFoundError(f"Model file not found: {k_opt.current_model}")
         
-        dgcnn = DGCNN(8, 16, 1024, 0.5)
+        dgcnn = DGCNN(8, 18, 1024, 0.5)
         dgcnn.load_state_dict(torch.load(k_opt.current_model, map_location=device))
         dgcnn.to(device)
         dgcnn.eval()
@@ -423,7 +423,7 @@ def surface_denoising(mesh_name, noise_level, k_opt, use_refinement = True, use_
         os.makedirs(output_dir, exist_ok=True)
         
         denoised_mesh_path = os.path.join(output_dir,
-                             f"denoised_{mesh_name}_{noise_level}.obj")
+                             f"denoised_{mesh_name}_{noise_level}_mod.obj")
         denoised_mesh.export(file_obj=denoised_mesh_path)
         logger.info(f"Denoised mesh saved in: {denoised_mesh_path}")
 
