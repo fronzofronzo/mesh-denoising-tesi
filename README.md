@@ -1,6 +1,6 @@
 # Mesh Denoising with Graph Convolutional Networks — Thesis Project
 
-A codebase and experiments for a master's thesis on applying Graph Convolutional Networks (DGCNN-style) to mesh denoising. The implementation focuses on predicting face/vertex normals from local mesh patches and using the predicted normals to drive surface denoising/vertex updates.
+A codebase and experiments for a bachelor's thesis on applying Graph Convolutional Networks (DGCNN-style) to mesh denoising. The implementation focuses on predicting face/vertex normals from local mesh patches and using the predicted normals to drive surface denoising/vertex updates.
 
 Repository: https://github.com/fronzofronzo/mesh-denoising-tesi
 
